@@ -950,7 +950,7 @@ function studioArcs(){const pick=(ks)=>({s:44,items:ks.map(k=>({a:'skind',val:k,
 const _fSets=fSets;fSets=function(k){return k==='studio'?studioArcs():_fSets(k)};
 const _fSelOf=fSelOf;fSelOf=function(it){return it.a==='skind'?SHK===it.val:_fSelOf(it)};
 
-let ECO=0;try{const q=localStorage.getItem('eco');ECO=q==null?1:+q}catch(e){}
+let ECO=0;try{const q=localStorage.getItem('eco');ECO=q==null?0:+q}catch(e){}
 function ecoApply(){document.documentElement.classList.toggle('eco',!!ECO);try{localStorage.setItem('eco',ECO)}catch(e){}if(typeof rs==='function')rs()}
 {const sg=$('#stg'),b=document.createElement('button');const up=()=>{b.innerHTML='<span style="width:18px;display:inline-block">'+(ECO?'✓':'')+'</span>وضع التوفير (أخف على الرام والمعالج)'};up();b.onclick=()=>{ECO=ECO?0:1;up();ecoApply()};sg.append(b)}
 document.documentElement.classList.toggle('eco',!!ECO);
