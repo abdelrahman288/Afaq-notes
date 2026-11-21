@@ -498,6 +498,7 @@ function vtw(t,ms){ms=ms||380;const a={x:v.x,y:v.y,z:v.z},t0=performance.now(),i
 function fling(a,b){if(Math.hypot(a,b)<.15)return;const id=++vtk,vv=v;let t0=performance.now();(function f(n){if(id!==vtk||vv!==v)return;const dt2=Math.min(50,n-t0);t0=n;v.x+=a*dt2;v.y+=b*dt2;const k=Math.pow(.94,dt2/16);a*=k;b*=k;rd();if(Math.hypot(a,b)>.02)requestAnimationFrame(f);else sv()})(t0)}
 function rtw(R2,ms){ms=ms||520;const T=T0(),A=T.R,t0=performance.now();(function f(n){const k=Math.min(1,(n-t0)/ms),e=1-Math.pow(1-k,3),M2=A.map((r,i)=>r.map((x,j)=>x+(R2[i][j]-x)*e)),l=nr(M2[0])||1,r0=M2[0].map(x=>x/l);let b=M2[1];const p=dt(b,r0);b=b.map((x,i)=>x-p*r0[i]);const l2=nr(b)||1,rb=b.map(x=>x/l2);T.R=[r0,rb,cr(r0,rb)];rq();if(k<1)requestAnimationFrame(f);else sv()})(t0)}
 function fade(){[M,L].forEach(c=>{c.style.setProperty('--d',1);c.classList.remove('sl');void c.offsetWidth;c.classList.add('sl')})}
+var APP_P=new Promise(r=>{window.__apprdy=r});setTimeout(()=>window.__apprdy&&window.__apprdy(),6000);
 /* ---------- welcome ---------- */
 let UN_MEM='',WD_MEM=0;
 const unGet=()=>{try{return localStorage.getItem('uname')||''}catch(e){return UN_MEM}};
@@ -595,7 +596,7 @@ mk('#acts',ic('prot'),'منقلة: حرّك الذراع الأحمر واقرأ
 [['int','التكامل'],['acc','F(x) التراكمي']].forEach(([k,n])=>mk('#cst',n,n,()=>{const C=CC();C[k]=C[k]?0:1;rd();sv()},null,'t'));
 mk('#cst','نوع المجموع','يسار / يمين / منتصف / شبه منحرف',()=>{const C=CC(),o='lrmt';C.rt=o[(o.indexOf(C.rt||'l')+1)%4];rd();sv()},null,'t');
 {const s=document.createElement('span');s.textContent='n';const r=document.createElement('input');r.type='range';r.min=1;r.max=200;r.value=8;r.title='عدد المستطيلات n';r.oninput=()=>{CC().n=+r.value;rq();sv()};$('#cst').append(s,r)}
-(async()=>{const old=await dbg('d');let lib=await lib0();if(old&&!lib.length){try{const d=JSON.parse(old);d.id=uid();d.name='ملاحظاتي (قديم)';await dbs('ws:'+d.id,JSON.stringify(d));lib=[{id:d.id,name:d.name,t:Date.now(),np:d.p.length,k:d.p[0].m||'b'}];await dbs('lib',lib);await dbx('d')}catch(e){}}showHome()})();
+(async()=>{const old=await dbg('d');let lib=await lib0();if(old&&!lib.length){try{const d=JSON.parse(old);d.id=uid();d.name='ملاحظاتي (قديم)';await dbs('ws:'+d.id,JSON.stringify(d));lib=[{id:d.id,name:d.name,t:Date.now(),np:d.p.length,k:d.p[0].m||'b'}];await dbs('lib',lib);await dbx('d')}catch(e){}}await showHome();window.__apprdy&&window.__apprdy()})();
 
 /* ===== v3: eraser by area, scribble-to-erase, shape snap, laser, clipboard, gestures, settings ===== */
 Object.assign(IC,{laser:'M12 8a4 4 0 100 8 4 4 0 000-8zM12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2',focus:'M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5',gear:'M4 7h10M18 7h2M4 17h2M10 17h10M14 4v6M6 14v6'});
@@ -1189,7 +1190,8 @@ addEventListener('pointerup',e=>{if(P.has(e.pointerId))L.onpointerup(e)});addEve
 let rzT=0;const rzDo=()=>{cancelAnimationFrame(rzT);rzT=requestAnimationFrame(()=>{const a=$('#app');if(!a)return;if(a.clientWidth!==W||a.clientHeight!==H)rs();else R=L.getBoundingClientRect();fabClampNow()})};
 addEventListener('resize',rzDo);addEventListener('orientationchange',()=>setTimeout(rzDo,250));if(window.ResizeObserver)new ResizeObserver(rzDo).observe($('#app'));
 rs();sync();document.documentElement.classList.add('rd');
-if('launchQueue' in window){launchQueue.setConsumer(async lp=>{try{if(!lp||!lp.files||!lp.files.length)return;const f=await lp.files[0].getFile();if(f&&(f.type==='application/pdf'||/\.pdf$/i.test(f.name))){const w=$('#wl');if(w)w.hidden=true;try{hideHome()}catch(e){}await newPdf(f)}}catch(e){}})}
+(async()=>{try{if(!/[?&]shared=1/.test(location.search))return;history.replaceState(null,'',location.pathname);const c=await caches.open('afaq-share'),r=await c.match('shared-file');if(!r)return;const bl=await r.blob(),nm=decodeURIComponent(r.headers.get('x-name')||'shared'),f=new File([bl],nm,{type:bl.type});await c.delete('shared-file');await APP_P;const w=$('#wl');if(w)w.hidden=true;try{hideHome()}catch(e){}if(f.type==='application/pdf'||/\.pdf$/i.test(nm))await newPdf(f);else await newImg(f)}catch(e){}})();
+if('launchQueue' in window){launchQueue.setConsumer(async lp=>{try{if(!lp||!lp.files||!lp.files.length)return;const f=await lp.files[0].getFile();await APP_P;if(f&&(f.type==='application/pdf'||/\.pdf$/i.test(f.name))){const w=$('#wl');if(w)w.hidden=true;try{hideHome()}catch(e){}await newPdf(f)}}catch(e){}})}
 
 
 ;if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));

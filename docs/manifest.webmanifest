@@ -45,5 +45,22 @@
     ]
    }
   }
- ]
+ ],
+ "share_target": {
+  "action": "./share-target",
+  "method": "POST",
+  "enctype": "multipart/form-data",
+  "params": {
+   "files": [
+    {
+     "name": "file",
+     "accept": [
+      "application/pdf",
+      ".pdf",
+      "image/*"
+     ]
+    }
+   ]
+  }
+ }
 }
