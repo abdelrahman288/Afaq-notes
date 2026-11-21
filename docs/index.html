@@ -1189,6 +1189,7 @@ addEventListener('pointerup',e=>{if(P.has(e.pointerId))L.onpointerup(e)});addEve
 let rzT=0;const rzDo=()=>{cancelAnimationFrame(rzT);rzT=requestAnimationFrame(()=>{const a=$('#app');if(!a)return;if(a.clientWidth!==W||a.clientHeight!==H)rs();else R=L.getBoundingClientRect();fabClampNow()})};
 addEventListener('resize',rzDo);addEventListener('orientationchange',()=>setTimeout(rzDo,250));if(window.ResizeObserver)new ResizeObserver(rzDo).observe($('#app'));
 rs();sync();document.documentElement.classList.add('rd');
+if('launchQueue' in window){launchQueue.setConsumer(async lp=>{try{if(!lp||!lp.files||!lp.files.length)return;const f=await lp.files[0].getFile();if(f&&(f.type==='application/pdf'||/\.pdf$/i.test(f.name))){const w=$('#wl');if(w)w.hidden=true;try{hideHome()}catch(e){}await newPdf(f)}}catch(e){}})}
 
 
 ;if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
