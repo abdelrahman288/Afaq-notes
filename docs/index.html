@@ -3,7 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Afaq Notes">
 <title>Afaq Notes</title>
 <style>
 :root{--bg:#e8e9ef;--bar:#fff;--fg:#1d1d24;--mut:#6c6c7a;--bd:#dcdde5;--ac:#2f6df6;--sh:0 4px 18px #0002;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -497,7 +503,7 @@ $('#fim').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(f)aw
 $('#fpd').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;if(f.type==='application/pdf'||/pdf$/i.test(f.name))await newPdf(f);else await newImg(f)};
 /* ---------- PDF ---------- */
 const lsc=u=>new Promise((r,j)=>{const s=document.createElement('script');s.src=u;s.onload=r;s.onerror=()=>j(new Error('load'));document.head.append(s)});
-async function pdfL(){if(!window.pdfjsLib){await lsc('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'}return pdfjsLib}
+async function pdfL(){if(window.pdfjsLib)return pdfjsLib;try{const m=await import('./vendor/pdf.min.mjs');m.GlobalWorkerOptions.workerSrc=new URL('vendor/pdf.worker.min.mjs',location.href).href;window.pdfjsLib=m;return m}catch(e){}await lsc('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';return pdfjsLib}
 async function pdfOpen(id,u){const L0=await pdfL(),doc=await L0.getDocument({data:u.slice(0)}).promise;PDS[id]={doc,bm:{},tx:{},lru:[]};return doc}
 async function newPdf(f){toast('بفتح الملف…');let u,doc;const id=uid();try{u=new Uint8Array(await f.arrayBuffer());doc=await pdfOpen(id,u)}catch(e){return toast('تعذر فتح الـ PDF (ممكن يكون محمي بباسورد أو تالف أو مفيش إنترنت)')}await dbs('pdf:'+id,u);const p1=await doc.getPage(1),vp=p1.getViewport({scale:1}),d={id,name:f.name.replace(/[.]pdf$/i,''),c:0,p:[]};for(let i=1;i<=doc.numPages;i++)d.p.push({o:[],v:{x:0,y:0,z:1},bg:'b',hi:[],re:[],m:'p',pf:i,pw:vp.width*96/72,ph:vp.height*96/72});d.p[0].sz=1;await psizeAll(doc,d.p);d.pv={x:0,y:0,z:1};adopt(d);hideHome();setM('p');fl()}
 async function newImg(f){const url=URL.createObjectURL(f),im=new Image;await new Promise(r=>{im.onload=r;im.onerror=r;im.src=url});if(!im.naturalWidth){URL.revokeObjectURL(url);return toast('تعذر فتح الصورة')}const s=Math.min(1,2000/Math.max(im.naturalWidth,im.naturalHeight)),c=document.createElement('canvas');c.width=Math.round(im.naturalWidth*s);c.height=Math.round(im.naturalHeight*s);c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(url);const png=f.type==='image/png',src=c.toDataURL(png?'image/png':'image/jpeg',.88),d={id:uid(),name:f.name.replace(/[.][^.]+$/,''),c:0,p:[{o:[],v:{x:0,y:0,z:1},bg:'b',hi:[],re:[],m:'p',src,pw:794,ph:Math.round(794*c.height/c.width),sz:1}]};adopt(d);hideHome();setM('p');fl()}
@@ -521,7 +527,7 @@ $('#inf').onclick=e=>{const r=e.target.closest('[data-r]'),o=e.target.closest('[
 function thBuild(){const t=$('#th');t.innerHTML='';if(IO)IO.disconnect();IO=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting){IO.unobserve(x.target);thr(x.target)}}),{root:t,rootMargin:'300px'});D.p.forEach((p,i)=>{const d=document.createElement('div');d.className='tn'+(i===D.c?' on':'');d.dataset.i=i;d.innerHTML='<canvas></canvas><span>'+(i+1)+'</span>';t.append(d);IO.observe(d)})}
 async function thr(d){const i=+d.dataset.i,p=D.p[i],c=d.firstChild,e=PDS[D.id];c.width=96;c.height=Math.round(96*(p.ph||1123)/(p.pw||794));const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);try{if(p.pf&&e){const g2=await e.doc.getPage(p.pf),v0=g2.getViewport({scale:1}),vp=g2.getViewport({scale:96/v0.width});c.height=Math.round(vp.height);x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);await g2.render({canvasContext:x,viewport:vp}).promise}else if(p.src){const im=new Image;im.src=p.src;await im.decode();x.drawImage(im,0,0,c.width,c.height)}}catch(e2){}}
 $('#th').onclick=e=>{const d=e.target.closest('.tn');if(d)go(+d.dataset.i)};
-async function exPdf(){let src=null;if(D.p.some(p=>p.pf))src=await dbg('pdf:'+D.id);toast('بجهّز الـ PDF… ممكن ياخد وقت على الملفات الكبيرة');try{await lsc('https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js')}catch(e){return toast('تعذر تحميل مكتبة التصدير. تأكد من الإنترنت')}
+async function exPdf(){let src=null;if(D.p.some(p=>p.pf))src=await dbg('pdf:'+D.id);toast('بجهّز الـ PDF… ممكن ياخد وقت على الملفات الكبيرة');try{if(!window.PDFLib){try{await lsc('vendor/pdf-lib.min.js')}catch(e){await lsc('https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js')}}}catch(e){return toast('تعذر تحميل مكتبة التصدير. افتح التطبيق مرة وإنت أونلاين عشان تتخزن')}
  try{const{PDFDocument}=PDFLib,sd=src?await PDFDocument.load(src,{ignoreEncryption:true}):null,out=await PDFDocument.create(),K2=.75;
   for(const p of D.p){let pp,W2,H2;if(p.pf&&sd){[pp]=await out.copyPages(sd,[p.pf-1]);out.addPage(pp);W2=pp.getWidth()/K2;H2=pp.getHeight()/K2}else{W2=p.pw||794;H2=p.ph||1123;pp=out.addPage([W2*K2,H2*K2]);if(p.src){const im=await(p.src.indexOf('data:image/png')===0?out.embedPng(p.src):out.embedJpg(p.src));pp.drawImage(im,{x:0,y:0,width:W2*K2,height:H2*K2})}}
    const b=bnd(p.o);if(!b)continue;const x0=Math.max(0,b[0]),y0=Math.max(0,b[1]),x1=Math.min(W2,b[2]),y1=Math.min(H2,b[3]);if(x1<=x0||y1<=y0)continue;for(const o of p.o)if(o.t==='i'){if(!o.im){o.im=new Image;o.im.src=o.src}try{await o.im.decode()}catch(e){}}
@@ -936,7 +942,7 @@ async function togFS(){try{if(fsEl())await(document.exitFullscreen||document.web
 let DIP=null;const isApp=()=>matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: fullscreen)').matches||navigator.standalone;
 {const sg=$('#stg'),sep=document.createElement('div');sep.style.cssText='padding:8px 10px 2px;color:var(--mut);border-top:1px solid var(--bd);margin-top:6px';sep.textContent='التطبيق والبيانات';sg.append(sep);
  const fb=document.createElement('button');const fu=()=>{fb.textContent=fsEl()?'⤢ خروج من ملء الشاشة':'⛶ ملء الشاشة (إخفاء شريط المتصفح)'};fu();fb.onclick=()=>togFS();document.addEventListener('fullscreenchange',()=>{fu();rzDo()});document.addEventListener('webkitfullscreenchange',()=>{fu();rzDo()});sg.append(fb);
- const ib=document.createElement('button');const iu=()=>{ib.hidden=isApp();ib.textContent='⬇ تثبيت كتطبيق'};iu();ib.onclick=async()=>{if(!DIP)return toast('التثبيت مش متاح من هنا. افتح النسخة المرفوعة على موقعك من كروم (HTTPS) وهيظهرلك');DIP.prompt();try{await DIP.userChoice}catch(e){}DIP=null;bnHide()};sg.append(ib);
+ const ib=document.createElement('button');const iu=()=>{ib.hidden=isApp();ib.textContent='⬇ تثبيت كتطبيق'};iu();ib.onclick=async()=>{if(!DIP)return instDiag();DIP.prompt();try{await DIP.userChoice}catch(e){}DIP=null;bnHide()};sg.append(ib);
  const rb=document.createElement('button');let rt=0;const ru=()=>{rb.style.color='#e03131';rb.textContent=rt?'⚠ متأكد؟ هيتمسح كل شغلك نهائيًا. دوس تاني للتأكيد':'🗑 إعادة تهيئة (مسح كل البيانات)'};ru();
  rb.onclick=()=>{if(!rt){rt=setTimeout(()=>{rt=0;ru()},5000);ru();return}clearTimeout(rt);rb.disabled=true;rb.textContent='بمسح...';wipeAll()};sg.append(rb);
  window.__iu=iu}
@@ -1122,6 +1128,29 @@ function snapMove(T,m){const b=m.b0,thr=7/v.z,c=[b[0]+T[0],(b[0]+b[2])/2+T[0],b[
   for(const a of c)for(const t of ox){const df=t-a;if(Math.abs(df)<thr&&(sx===null||Math.abs(df)<Math.abs(sx))){sx=df;gx=t}}
   for(const a of d)for(const t of oy){const df=t-a;if(Math.abs(df)<thr&&(sy===null||Math.abs(df)<Math.abs(sy))){sy=df;gy=t}}}
  return{dx:T[0]+(sx||0),dy:T[1]+(sy||0),gx,gy}}
+
+/* ---- fullscreen on the main bar + install diagnostics ---- */
+Object.assign(IC,{fsx:'M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7',fsn:'M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7'});
+{const ctl=$('#ctl'),fb=document.createElement('button');fb.id='fsb';fb.setAttribute('aria-label','ملء الشاشة');
+ const up=()=>{const on=!!fsEl();fb.innerHTML=ic(on?'fsn':'fsx');fb.title=on?'خروج من ملء الشاشة':'ملء الشاشة (إخفاء شريط المتصفح)';fb.classList.toggle('on',false)};up();
+ fb.onclick=()=>{const e=document.documentElement;if(!(e.requestFullscreen||e.webkitRequestFullscreen)&&!fsEl())return toast('المتصفح ده مبيدعمش ملء الشاشة. ثبّت التطبيق على الشاشة الرئيسية وهيفتح بدون شريط');togFS()};
+ ctl.insertBefore(fb,ctl.lastElementChild);document.addEventListener('fullscreenchange',up);document.addEventListener('webkitfullscreenchange',up)}
+async function instDiag(){if($('#rmv'))return;const ov=document.createElement('div');ov.id='rmv';
+ ov.innerHTML='<div class="rc" role="dialog" aria-label="فحص التثبيت"><h2>فحص إمكانية التثبيت</h2><div class="sub">بنفحص الشروط اللي كروم بيحتاجها عشان يثبّت Afaq Notes كتطبيق.</div><div class="st" id="dgl"><p>جارٍ الفحص…</p></div><div id="dgh"></div><button class="rb" id="dgx">إغلاق</button></div>';
+ document.body.append(ov);const ek=e=>{if(e.key==='Escape'){e.preventDefault();cl()}},cl=()=>{ov.remove();removeEventListener('keydown',ek,true)};addEventListener('keydown',ek,true);ov.addEventListener('pointerdown',e=>{if(e.target===ov)cl()});ov.querySelector('#dgx').onclick=cl;
+ const R=[],add=(ok,t,h)=>R.push([ok,t,h||'']);
+ add(isSecureContext,'الصفحة على HTTPS','لازم تفتح الرابط بـ https:// (GitHub Pages بيدّيك ده تلقائي).');
+ add(window===window.top,'الصفحة مفتوحة مباشرة (مش جوه إطار)','التثبيت مش بيشتغل لو الصفحة جوه موقع تاني زي claude.ai. افتح رابط الاستضافة بتاعك.');
+ const lk=document.querySelector('link[rel=manifest]');add(!!lk,'ملف التعريف (manifest) مربوط بالصفحة','النسخة اللي رفعتها هي نسخة web-only أو ملف index.html قديم. ارفع محتوى فولدر install-as-app كامل.');
+ if(lk){let m=null;try{const r=await fetch(lk.href,{cache:'no-store'});add(r.ok,'ملف manifest بيتحمّل ('+r.status+')','الملف manifest.webmanifest لازم يكون جنب index.html في نفس المكان على GitHub.');m=await r.json()}catch(e){add(false,'ملف manifest مش شغال','تأكد إنه اتّرفع بدون تعديل.')}
+  if(m){add(!!(m.name||m.short_name),'اسم التطبيق موجود');add(!!m.start_url,'start_url موجود');add(['standalone','fullscreen','minimal-ui'].includes(m.display),'display = '+m.display);
+   const ic2=m.icons||[];const has=n=>ic2.some(i=>(i.sizes||'').split(' ').some(z=>parseInt(z)>=n)&&/png/.test(i.type||'png'));add(has(192)&&has(512),'أيقونات 192 و512 معرّفة');
+   for(const i of ic2){try{const u=new URL(i.src,lk.href),r=await fetch(u,{cache:'no-store'});add(r.ok&&/image/.test(r.headers.get('content-type')||''),'الأيقونة '+i.src+' ('+r.status+')','فولدر icons لازم يترفع كامل جنب index.html (بنفس الاسم icons بحروف صغيرة).')}catch(e){add(false,'الأيقونة '+i.src+' مش بتتحمّل','فولدر icons ناقص.')}}}}
+ try{const reg=await navigator.serviceWorker.getRegistration();add(!!(reg&&(reg.active||reg.installing||reg.waiting)),'نسخة التشغيل بدون نت (Service Worker) مسجّلة','ملف sw.js لازم يتّرفع جنب index.html. حدّث الصفحة مرة وبعدين افحص تاني.')}catch(e){add(false,'Service Worker غير مدعوم هنا')}
+ try{const r=await fetch('vendor/pdf.min.mjs',{method:'HEAD'});add(r.ok,'مكتبات الـ PDF المحلية (للعمل بدون نت)','فولدر vendor لازم يترفع كامل.')}catch(e){add(false,'مكتبات الـ PDF المحلية','فولدر vendor ناقص.')}
+ add(!isApp(),isApp()?'التطبيق مثبّت فعلاً وشغال كتطبيق':'التطبيق مش مثبّت دلوقتي');
+ ov.querySelector('#dgl').innerHTML=R.map(([ok,t,h])=>'<p style="color:'+(ok?'#16a34a':'#e03131')+'">'+(ok?'✓ ':'✗ ')+t+(ok||!h?'':'<br><small style="color:var(--mut)">'+h+'</small>')+'</p>').join('');
+ const bad=R.filter(x=>!x[0]).length;ov.querySelector('#dgh').innerHTML='<div class="st'+(bad?' warn':'')+'"><b>'+(bad?'في '+bad+' حاجة محتاجة تتصلح':'كل الشروط سليمة')+'</b><p>'+(bad?'صلّح البنود الحمراء وارفع الملفات تاني، وبعدها حدّث الصفحة (Ctrl+F5 أو امسح بيانات الموقع) وجرّب.':'لو كروم لسه مش بيعرض التثبيت: اضغط ⋮ ثم "تثبيت التطبيق" أو "إضافة إلى الشاشة الرئيسية". ولو الجهاز تحت Knox أو إدارة جهة، ممكن سياسة الجهاز هي اللي بتمنع التثبيت.')+'</p></div>'}
 function resetInput(){for(const id of[...P.keys()]){try{L.onpointerup({pointerId:id,pointerType:'touch',timeStamp:performance.now(),type:'pointercancel'})}catch(e){}}P.clear();md=null;pan=null;g=null;mv=null;cur=null;cl();rq()}
 addEventListener('blur',resetInput);document.addEventListener('visibilitychange',()=>{if(document.hidden)resetInput()});
 addEventListener('pointerup',e=>{if(P.has(e.pointerId))L.onpointerup(e)});addEventListener('pointercancel',e=>{if(P.has(e.pointerId))L.onpointerup(e)});
@@ -1129,6 +1158,8 @@ let rzT=0;const rzDo=()=>{cancelAnimationFrame(rzT);rzT=requestAnimationFrame(()
 addEventListener('resize',rzDo);addEventListener('orientationchange',()=>setTimeout(rzDo,250));if(window.ResizeObserver)new ResizeObserver(rzDo).observe($('#app'));
 rs();sync();
 
+
+;if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 </script>
 </body>
 </html>

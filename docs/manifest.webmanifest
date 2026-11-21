@@ -11,6 +11,11 @@
  "lang": "ar",
  "background_color": "#ffffff",
  "theme_color": "#ffffff",
+ "prefer_related_applications": false,
+ "categories": [
+  "education",
+  "productivity"
+ ],
  "icons": [
   {
    "src": "icons/icon-192.png",
