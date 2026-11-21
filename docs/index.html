@@ -229,6 +229,20 @@ button:disabled{opacity:.32;pointer-events:none}
 #tip{position:absolute;left:0;right:0;margin:0 auto;bottom:calc(86px + env(safe-area-inset-bottom,0px));z-index:9;width:min(92vw,420px);display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:20px;background:var(--bar);border:1px solid var(--bd);box-shadow:var(--sh);animation:cpIn .3s cubic-bezier(.2,.9,.3,1) both}
 #tip .ti{flex:1;font-size:13.5px;line-height:1.6}#tip .ti b{display:block;font-size:12px;color:var(--ac);margin-bottom:2px}
 #tip button{height:36px;min-width:0;padding:0 14px;border-radius:12px;font-weight:600;border:1px solid var(--bd)}#tip .go{background:var(--ac);color:#fff;border-color:transparent}
+
+#wl{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:18px;background:#0007;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+#wl[hidden]{display:none}
+#wl .wlc{width:min(460px,100%);max-height:calc(100dvh - 36px);overflow:auto;background:var(--bar);color:var(--fg);border:1px solid var(--bd);border-radius:20px;box-shadow:0 20px 60px #0005;padding:26px 22px 22px;text-align:center}
+#wl h2{margin:10px 0 6px;font-size:24px}
+#wl p{margin:0 0 14px;color:var(--mut);font-size:14px;line-height:1.7}
+#wl ul{list-style:none;margin:0 0 16px;padding:0;text-align:right;display:grid;gap:8px}
+#wl li{background:var(--bg);border:1px solid var(--bd);border-radius:12px;padding:9px 12px;font-size:14px;line-height:1.5}
+#wl label{display:block;text-align:right;font-weight:700;font-size:14px;margin:4px 2px 6px}
+#wl input{width:100%;height:46px;border:1px solid var(--bd);border-radius:12px;background:var(--bg);color:var(--fg);padding:0 14px;font-size:16px;box-sizing:border-box}
+#wl .wlb{width:100%;height:48px;margin-top:12px;border:0;border-radius:12px;background:var(--ac);color:#fff;font-size:16px;font-weight:700;cursor:pointer}
+#wl .wls{margin-top:10px;background:none;border:0;color:var(--mut);font-size:13px;cursor:pointer;text-decoration:underline}
+.unm{display:inline-flex;align-items:center;gap:8px;margin:6px 4px 0;font-size:20px;cursor:pointer;color:var(--fg)}
+.unm span{font-size:14px;color:var(--mut)}
 </style>
 </head>
 <body>
@@ -482,6 +496,23 @@ function vtw(t,ms){ms=ms||380;const a={x:v.x,y:v.y,z:v.z},t0=performance.now(),i
 function fling(a,b){if(Math.hypot(a,b)<.15)return;const id=++vtk,vv=v;let t0=performance.now();(function f(n){if(id!==vtk||vv!==v)return;const dt2=Math.min(50,n-t0);t0=n;v.x+=a*dt2;v.y+=b*dt2;const k=Math.pow(.94,dt2/16);a*=k;b*=k;rd();if(Math.hypot(a,b)>.02)requestAnimationFrame(f);else sv()})(t0)}
 function rtw(R2,ms){ms=ms||520;const T=T0(),A=T.R,t0=performance.now();(function f(n){const k=Math.min(1,(n-t0)/ms),e=1-Math.pow(1-k,3),M2=A.map((r,i)=>r.map((x,j)=>x+(R2[i][j]-x)*e)),l=nr(M2[0])||1,r0=M2[0].map(x=>x/l);let b=M2[1];const p=dt(b,r0);b=b.map((x,i)=>x-p*r0[i]);const l2=nr(b)||1,rb=b.map(x=>x/l2);T.R=[r0,rb,cr(r0,rb)];rq();if(k<1)requestAnimationFrame(f);else sv()})(t0)}
 function fade(){[M,L].forEach(c=>{c.style.setProperty('--d',1);c.classList.remove('sl');void c.offsetWidth;c.classList.add('sl')})}
+/* ---------- welcome ---------- */
+let UN_MEM='',WD_MEM=0;
+const unGet=()=>{try{return localStorage.getItem('uname')||''}catch(e){return UN_MEM}};
+const unSet=n=>{UN_MEM=n;try{localStorage.setItem('uname',n);localStorage.setItem('wd','1')}catch(e){}WD_MEM=1};
+const wdDone=()=>{try{return !!localStorage.getItem('wd')}catch(e){return !!WD_MEM}};
+function UNM(){const n=unGet();return '<div class="unm" data-nm="1" title="تعديل الاسم">مرحباً'+(n?'، <b>'+esc(n)+'</b>':'')+' 👋<span>✎</span></div>'}
+function wlShow(edit){let w=$('#wl');if(!w){w=document.createElement('div');w.id='wl';w.setAttribute('role','dialog');w.setAttribute('aria-modal','true');document.body.appendChild(w)}
+ const n=unGet();
+ w.innerHTML='<div class="wlc">'+LOGO_SVG(56)+'<h2>'+(edit?'تعديل الاسم':'أهلاً بيك في Afaq Notes')+'</h2>'
+ +(edit?'':'<p>مساحة واحدة للكتابة والرسم والمذاكرة، بتشتغل على الموبايل والتابلت والكمبيوتر، وحتى بدون نت.</p><ul><li>✍️ سبورة وملاحظات (مسطّرة أو مربعات أو نقط أو كورنيل) بالقلم أو بإيدك</li><li>📐 هندسة ومجسّمات ومحاور 3D ورسم الدوال</li><li>∫ تفاضل وتكامل بشكل مرئي</li><li>📄 افتح أي PDF أو صورة واكتب عليها وصدّرها</li><li>💾 كل حاجة بتتحفظ تلقائي على جهازك</li></ul>')
+ +'<label for="wn">اسمك إيه؟</label><input id="wn" maxlength="30" autocomplete="given-name" placeholder="اكتب اسمك هنا" value="'+esc(n)+'"><button class="wlb" id="wgo">'+(edit?'حفظ':'يلا نبدأ')+'</button>'+(edit||n?'<button class="wls" id="wsk">إلغاء</button>':'<button class="wls" id="wsk">تخطي</button>')+'</div>';
+ w.hidden=false;const i=$('#wn'),go=()=>{const v=i.value.trim().replace(/\s+/g,' ');if(!v){i.focus();i.style.borderColor='#e5383b';return}unSet(v);w.hidden=true;const b=document.querySelector('.unm');if(b)b.outerHTML=UNM()};
+ $('#wgo').onclick=go;i.onkeydown=e=>{if(e.key==='Enter')go()};
+ $('#wsk').onclick=()=>{if(!edit&&!n){try{localStorage.setItem('wd','1')}catch(e){}WD_MEM=1}w.hidden=true};
+ setTimeout(()=>{try{i.focus()}catch(e){}},50)}
+document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('[data-nm]'))wlShow(1)});
+if(!wdDone()&&!unGet())wlShow(0);
 /* ---------- home ---------- */
 const GRD='linear-gradient(#0002 1px,transparent 1px) 0 0/14px 14px,linear-gradient(90deg,#0002 1px,transparent 1px) 0 0/14px 14px,#fff',S1=a=>'<svg viewBox="0 0 100 70" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">'+a+'</svg>',SQ='<path d="M18 46c8-18 14 10 22-4s14-12 24-5 12 6 18-3" stroke="#2f6df6"/>',
 TP=[['سبورة بيضاء','b','b',S1(SQ),'#fff'],['سبورة مربعات','b','g',S1(SQ),GRD],['ملاحظات مسطّرة','n','l','','repeating-linear-gradient(#fff 0 13px,#a9bdea 13px 14px)'],['ملاحظات مربعات','n','g','','linear-gradient(#a9bdea 1px,transparent 1px) 0 0/14px 14px,linear-gradient(90deg,#a9bdea 1px,transparent 1px) 0 0/14px 14px,#fff'],['ملاحظات نقط','n','d','','radial-gradient(#7c8db5 1.3px,transparent 1.8px) 0 0/14px 14px,#fff'],
@@ -489,7 +520,7 @@ TP=[['سبورة بيضاء','b','b',S1(SQ),'#fff'],['سبورة مربعات','
 function tnew(i){const t=TP[i],d={id:uid(),name:t[0]+' · '+new Date().toLocaleDateString('ar-EG'),c:0,p:[{o:[],v:{x:0,y:0,z:1},bg:t[2]||'g',hi:[],re:[]}]};if(t[1]==='n')d.p[0].N=Object.assign({ls:32,mg:1,ty:t[2],or:0},t[5]||{});adopt(d);hideHome();setM(t[1]);fl()}
 function hideHome(){HM=0;$('#home').classList.remove('show');rq()}
 async function showHome(){if(D.id&&!HM)await fl(2);HM=1;const lib=(await lib0()).sort((a,b)=>b.t-a.t),h=$('#home'),KN={b:'سبورة',n:'ملاحظات',g:'هندسة',s:'مجسّمات',t:'محاور 3D',c:'تفاضل',p:'مستند'};
- h.innerHTML='<div class="hw"><div class="hh"><div class="lg">'+LOGO_SVG(40)+'<span>Afaq Notes</span></div><div class="ha"><button class="pri" data-h="new">＋ جديد</button><button data-h="imp">استيراد ملف</button><button data-h="pdf">افتح PDF أو صورة واكتب عليها</button>'+(D.id?'<button data-h="back">رجوع للملف الحالي</button>':'')+'</div></div><h3>ابدأ من قالب</h3><div class="gr">'+TP.map((t,i)=>'<div class="cd" style="--i:'+i+'" data-tp="'+i+'"><div class="pv" style="background:'+t[4]+'">'+t[3]+'</div><b>'+t[0]+'</b></div>').join('')+'</div><h3>ملفاتي المحفوظة ('+lib.length+')</h3><div class="gr">'+(lib.length?lib.map((m,i)=>'<div class="cd" style="--i:'+(i+TP.length)+'" data-ws="'+m.id+'"><img data-th="'+m.id+'" alt=""><b>'+esc(m.name)+'</b><small>'+new Date(m.t).toLocaleDateString('ar-EG')+' · '+m.np+' صفحة · '+(KN[m.k]||'')+'</small><div class="ca"><button data-a="ren" title="إعادة تسمية">✎</button><button data-a="dup" title="نسخة">'+ic('dup')+'</button><button data-a="exp" title="تصدير ملف .nbk">'+ic('exp')+'</button><button data-a="del" title="حذف">'+ic('del')+'</button></div></div>').join(''):'<div style="color:var(--mut);padding:10px;grid-column:1/-1">لسه مفيش ملفات. أي حاجة تكتبها بتتحفظ تلقائي هنا.</div>')+'</div></div>';
+ h.innerHTML='<div class="hw"><div class="hh"><div class="lg">'+LOGO_SVG(40)+'<span>Afaq Notes</span></div><div class="ha"><button class="pri" data-h="new">＋ جديد</button><button data-h="imp">استيراد ملف</button><button data-h="pdf">افتح PDF أو صورة واكتب عليها</button>'+(D.id?'<button data-h="back">رجوع للملف الحالي</button>':'')+'</div></div>'+UNM()+'<h3>ابدأ من قالب</h3><div class="gr">'+TP.map((t,i)=>'<div class="cd" style="--i:'+i+'" data-tp="'+i+'"><div class="pv" style="background:'+t[4]+'">'+t[3]+'</div><b>'+t[0]+'</b></div>').join('')+'</div><h3>ملفاتي المحفوظة ('+lib.length+')</h3><div class="gr">'+(lib.length?lib.map((m,i)=>'<div class="cd" style="--i:'+(i+TP.length)+'" data-ws="'+m.id+'"><img data-th="'+m.id+'" alt=""><b>'+esc(m.name)+'</b><small>'+new Date(m.t).toLocaleDateString('ar-EG')+' · '+m.np+' صفحة · '+(KN[m.k]||'')+'</small><div class="ca"><button data-a="ren" title="إعادة تسمية">✎</button><button data-a="dup" title="نسخة">'+ic('dup')+'</button><button data-a="exp" title="تصدير ملف .nbk">'+ic('exp')+'</button><button data-a="del" title="حذف">'+ic('del')+'</button></div></div>').join(''):'<div style="color:var(--mut);padding:10px;grid-column:1/-1">لسه مفيش ملفات. أي حاجة تكتبها بتتحفظ تلقائي هنا.</div>')+'</div></div>';
  requestAnimationFrame(()=>h.classList.add('show'));lib.forEach(async m=>{const u=await dbg('th:'+m.id),im=h.querySelector('img[data-th="'+m.id+'"]');if(im){if(u)im.src=u;else im.style.display='none'}})}
 $('#home').onclick=async e=>{const t=e.target,a=t.closest('[data-a]'),w=t.closest('[data-ws]'),tp=t.closest('[data-tp]'),hb=t.closest('[data-h]');
  if(hb){const k=hb.dataset.h;if(k==='new')tnew(0);else if(k==='imp')$('#fim').click();else if(k==='pdf')$('#fpd').click();else if(k==='back')hideHome();return}
