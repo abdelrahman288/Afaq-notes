@@ -11,7 +11,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Afaq Notes">
 <title>Afaq Notes</title>
+<script>setTimeout(function(){document.documentElement.classList.add('rd')},4000)</script>
 <style>
+html:not(.rd) #app{visibility:hidden}
 :root{--bg:#e8e9ef;--bar:#fff;--fg:#1d1d24;--mut:#6c6c7a;--bd:#dcdde5;--ac:#2f6df6;--sh:0 4px 18px #0002;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 :root[data-theme="dark"]{--bg:#0e0f12;--bar:#25262d;--fg:#ececf2;--mut:#9a9aa8;--bd:#3a3b45;--ac:#5b8cff;color-scheme:dark}
 [hidden]{display:none!important}
@@ -1186,7 +1188,7 @@ addEventListener('blur',resetInput);document.addEventListener('visibilitychange'
 addEventListener('pointerup',e=>{if(P.has(e.pointerId))L.onpointerup(e)});addEventListener('pointercancel',e=>{if(P.has(e.pointerId))L.onpointerup(e)});
 let rzT=0;const rzDo=()=>{cancelAnimationFrame(rzT);rzT=requestAnimationFrame(()=>{const a=$('#app');if(!a)return;if(a.clientWidth!==W||a.clientHeight!==H)rs();else R=L.getBoundingClientRect();fabClampNow()})};
 addEventListener('resize',rzDo);addEventListener('orientationchange',()=>setTimeout(rzDo,250));if(window.ResizeObserver)new ResizeObserver(rzDo).observe($('#app'));
-rs();sync();
+rs();sync();document.documentElement.classList.add('rd');
 
 
 ;if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
