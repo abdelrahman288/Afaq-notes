@@ -1,4 +1,4 @@
-const V='afaq-v17',
+const V='afaq-v18',
 SHELL=['./','index.html','manifest.webmanifest','icons/icon-192.png','icons/icon-512.png','icons/maskable-512.png','icons/apple-touch-icon.png','vendor/pdf.min.mjs','vendor/pdf.worker.min.mjs','vendor/pdf-lib.min.js'],
 CDN=['https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js','https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js','https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js'];
 self.addEventListener('install',e=>{e.waitUntil((async()=>{const c=await caches.open(V);await Promise.allSettled(SHELL.map(u=>c.add(u)));await Promise.allSettled(CDN.map(u=>c.add(u)));await self.skipWaiting()})())});
